@@ -186,4 +186,7 @@ export default function Dashboard({ state, updateState }) {
         <span style={{ marginLeft:'auto', color:'var(--text-dim)', fontSize:11 }}>
           <strong style={{ color:'var(--bill)' }}>B</strong> / <strong style={{ color:'var(--don)' }}>D</strong> = picker
         </span>
-      </di
+      </div>
+    </div>
+  );
+}
