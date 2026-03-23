@@ -68,7 +68,7 @@ export default function Dashboard({ state, updateState }) {
 
     return (
       <tr key={game.id} style={{ borderLeft: game.isCFP ? '3px solid var(--gold)' : '3px solid transparent' }}>
-        <td style={{ color:'var(--text-muted)', fontSize:12, whiteSpace:'nowrap' }}>{game.date}</td>
+        <td className="desktop-only" style={{ color:'var(--text-muted)', fontSize:12, whiteSpace:'nowrap' }}>{game.date}</td>
         <td style={{ minWidth:160 }}>
           <div style={{ display:'flex', alignItems:'center', gap:5 }}>
             <span style={{
@@ -98,7 +98,10 @@ export default function Dashboard({ state, updateState }) {
               background: result === 'bill' ? 'var(--bill-bg)' : 'var(--navy-light)',
               color: result === 'bill' ? 'var(--bill)' : 'var(--text-muted)',
               transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
-            }}>Bill</button>
+            }}>
+              <span className="desktop-only">Bill</span>
+              <span className="mobile-only">B</span>
+            </button>
             <button onClick={() => setResult(game.id, 'don')} style={{
               minWidth:52, height:34, borderRadius:'var(--radius-sm)',
               fontSize:13, fontWeight:700, cursor:'pointer',
@@ -106,13 +109,16 @@ export default function Dashboard({ state, updateState }) {
               background: result === 'don' ? 'var(--don-bg)' : 'var(--navy-light)',
               color: result === 'don' ? 'var(--don)' : 'var(--text-muted)',
               transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
-            }}>Don</button>
+            }}>
+              <span className="desktop-only">Don</span>
+              <span className="mobile-only">D</span>
+            </button>
           </div>
         </td>
-        <td className={`money-cell ${settled ? moneyClass(billDelta) : 'zero'}`} style={{ fontSize:13 }}>
+        <td className={`money-cell desktop-only ${settled ? moneyClass(billDelta) : 'zero'}`} style={{ fontSize:13 }}>
           {settled ? formatMoney(billDelta) : <span style={{ color:'var(--text-dim)' }}>—</span>}
         </td>
-        <td className={`money-cell ${settled ? moneyClass(donDelta) : 'zero'}`} style={{ fontSize:13 }}>
+        <td className={`money-cell desktop-only ${settled ? moneyClass(donDelta) : 'zero'}`} style={{ fontSize:13 }}>
           {settled ? formatMoney(donDelta) : <span style={{ color:'var(--text-dim)' }}>—</span>}
         </td>
       </tr>
@@ -157,17 +163,17 @@ export default function Dashboard({ state, updateState }) {
         </div>
       </div>
 
-      <div className="card" style={{ marginBottom:16, overflowX:'auto' }}>
+      <div className="card" style={{ marginBottom:16 }}>
         <table className="data-table">
           <thead>
             <tr>
-              <th>Date</th>
+              <th className="desktop-only">Date</th>
               <th>Game</th>
               <th style={{ color:'var(--bill)' }}>Bill's Team</th>
               <th style={{ color:'var(--don)' }}>Don's Team</th>
               <th>Winner</th>
-              <th className="num" style={{ color:'var(--bill)' }}>Bill $</th>
-              <th className="num" style={{ color:'var(--don)' }}>Don $</th>
+              <th className="num desktop-only" style={{ color:'var(--bill)' }}>Bill $</th>
+              <th className="num desktop-only" style={{ color:'var(--don)' }}>Don $</th>
             </tr>
           </thead>
           <tbody>{games.map(renderGame)}</tbody>
@@ -180,7 +186,4 @@ export default function Dashboard({ state, updateState }) {
         <span style={{ marginLeft:'auto', color:'var(--text-dim)', fontSize:11 }}>
           <strong style={{ color:'var(--bill)' }}>B</strong> / <strong style={{ color:'var(--don)' }}>D</strong> = picker
         </span>
-      </div>
-    </div>
-  );
-}
+      </di
