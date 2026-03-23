@@ -57,9 +57,71 @@ export default function Dashboard({ state, updateState }) {
     updateState({ results: nr });
   };
 
+  const renderGame = (game) => {
+    const result     = results[game.id];
+    const billPick   = picks[game.id]?.bill   || game.team2;
+    const donPick    = picks[game.id]?.don    || game.team1;
+    const billSpread = picks[game.id]?.billSpread || game.spread2;
+    const donSpread  = picks[game.id]?.donSpread  || game.spread1;
+    const { billDelta, donDelta, settled } = calcGameResult(game, result);
+    const pickerColor = game.billPicker ? 'var(--bill)' : 'var(--don)';
+
+    return (
+      <tr key={game.id}>
+        <td style={{ color:'var(--text-muted)', fontSize:12, whiteSpace:'nowrap' }}>{game.date}</td>
+        <td>
+          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+            <span style={{
+              fontSize:10, fontWeight:800, color:pickerColor,
+              background:`color-mix(in srgb, ${pickerColor} 12%, transparent)`,
+              border:`1px solid color-mix(in srgb, ${pickerColor} 25%, transparent)`,
+              borderRadius:3, padding:'1px 5px', flexShrink:0,
+            }}>{game.billPicker ? 'B' : 'D'}</span>
+            {game.isCFP && <span style={{ fontSize:13 }}>🏆</span>}
+            <span style={{ fontWeight:600 }}>{game.name}</span>
+            {game.isCFP && <span className="badge badge-cfp">2×</span>}
+          </div>
+        </td>
+        <td className="desktop-only">
+          <span className="team-name bill-pick">{billPick}</span>
+          <span className="spread-tag">{billSpread}</span>
+        </td>
+        <td className="desktop-only">
+          <span className="team-name don-pick">{donPick}</span>
+          <span className="spread-tag">{donSpread}</span>
+        </td>
+        <td>
+          <div style={{ display:'flex', gap:5 }}>
+            <button onClick={() => setResult(game.id, 'bill')} style={{
+              minWidth:50, height:36, borderRadius:'var(--radius-sm)',
+              fontSize:13, fontWeight:700, cursor:'pointer',
+              border: result === 'bill' ? '2px solid var(--blue)' : '1px solid var(--navy-border)',
+              background: result === 'bill' ? 'var(--bill-bg)' : 'var(--navy-light)',
+              color: result === 'bill' ? 'var(--bill)' : 'var(--text-muted)',
+              transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
+            }}>Bill</button>
+            <button onClick={() => setResult(game.id, 'don')} style={{
+              minWidth:50, height:36, borderRadius:'var(--radius-sm)',
+              fontSize:13, fontWeight:700, cursor:'pointer',
+              border: result === 'don' ? '2px solid var(--red)' : '1px solid var(--navy-border)',
+              background: result === 'don' ? 'var(--don-bg)' : 'var(--navy-light)',
+              color: result === 'don' ? 'var(--don)' : 'var(--text-muted)',
+              transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
+            }}>Don</button>
+          </div>
+        </td>
+        <td className={`money-cell desktop-only ${settled ? moneyClass(billDelta) : 'zero'}`}>
+          {settled ? formatMoney(billDelta) : <span style={{ color:'var(--text-dim)' }}>—</span>}
+        </td>
+        <td className={`money-cell desktop-only ${settled ? moneyClass(donDelta) : 'zero'}`}>
+          {settled ? formatMoney(donDelta) : <span style={{ color:'var(--text-dim)' }}>—</span>}
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <div>
-      {/* Hero */}
       <div className="dashboard-hero">
         <div>
           <div className="hero-season">2025–26 Season — Running Total</div>
@@ -71,7 +133,6 @@ export default function Dashboard({ state, updateState }) {
         </div>
       </div>
 
-      {/* Lock banner */}
       {phase === 'picking' && lockTime && (
         <div className="lock-banner">
           <span>🔒</span>
@@ -80,7 +141,6 @@ export default function Dashboard({ state, updateState }) {
         </div>
       )}
 
-      {/* Score cards */}
       <div className="scoreboard">
         <div className="score-card bill-card">
           <div className="score-card-name">Bill</div>
@@ -98,91 +158,23 @@ export default function Dashboard({ state, updateState }) {
         </div>
       </div>
 
-      {/* Game rows */}
-      <div style={{ display:'flex', flexDirection:'column', gap:4, marginBottom:16 }}>
-        {games.map(game => {
-          const result     = results[game.id];
-          const billPick   = picks[game.id]?.bill   || game.team2;
-          const donPick    = picks[game.id]?.don    || game.team1;
-          const billSpread = picks[game.id]?.billSpread || game.spread2;
-          const donSpread  = picks[game.id]?.donSpread  || game.spread1;
-          const { billDelta, donDelta, settled } = calcGameResult(game, result);
-          const pickerColor = game.billPicker ? 'var(--bill)' : 'var(--don)';
-
-          const billActive = result === 'bill';
-          const donActive  = result === 'don';
-
-          return (
-            <div key={game.id} style={{
-              background: 'var(--navy-card)',
-              border: '1px solid var(--navy-border)',
-              borderLeft: game.isCFP ? '3px solid var(--gold)' : '3px solid transparent',
-              borderRadius: 'var(--radius)',
-              padding: '10px 12px',
-              display: 'grid',
-              gridTemplateColumns: '1fr auto',
-              gap: '4px 10px',
-              alignItems: 'center',
-            }}>
-
-              {/* Game name row */}
-              <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                <span style={{
-                  fontSize:10, fontWeight:800, color:pickerColor,
-                  background:`color-mix(in srgb, ${pickerColor} 12%, transparent)`,
-                  border:`1px solid color-mix(in srgb, ${pickerColor} 25%, transparent)`,
-                  borderRadius:3, padding:'1px 5px', flexShrink:0, letterSpacing:0.5,
-                }}>{game.billPicker ? 'B' : 'D'}</span>
-                {game.isCFP && <span>🏆</span>}
-                <span style={{ fontWeight:700, fontSize:14, color:'var(--text)' }}>{game.name}</span>
-                <span style={{ fontSize:11, color:'var(--text-dim)' }}>{game.date}</span>
-                {game.isCFP && <span className="badge badge-cfp">2×</span>}
-              </div>
-
-              {/* Winner buttons — span 2 rows */}
-              <div style={{
-                display:'flex', gap:6, gridRow:'1 / 3', alignSelf:'center',
-              }}>
-                <button onClick={() => setResult(game.id, 'bill')} style={{
-                  width:58, height:44, borderRadius:'var(--radius-sm)',
-                  fontSize:13, fontWeight:700, cursor:'pointer',
-                  border: billActive ? '2px solid var(--blue)' : '1px solid var(--navy-border)',
-                  background: billActive ? 'var(--bill-bg)' : 'var(--navy-light)',
-                  color: billActive ? 'var(--bill)' : 'var(--text-muted)',
-                  transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
-                }}>Bill</button>
-                <button onClick={() => setResult(game.id, 'don')} style={{
-                  width:58, height:44, borderRadius:'var(--radius-sm)',
-                  fontSize:13, fontWeight:700, cursor:'pointer',
-                  border: donActive ? '2px solid var(--red)' : '1px solid var(--navy-border)',
-                  background: donActive ? 'var(--don-bg)' : 'var(--navy-light)',
-                  color: donActive ? 'var(--don)' : 'var(--text-muted)',
-                  transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
-                }}>Don</button>
-              </div>
-
-              {/* Teams row */}
-              <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:12 }}>
-                <span style={{ fontWeight:600, color:'var(--bill)' }}>{billPick}</span>
-                <span style={{ color:'var(--text-dim)', fontSize:11 }}>{billSpread}</span>
-                <span style={{ color:'var(--text-dim)' }}>vs</span>
-                <span style={{ fontWeight:600, color:'var(--don)' }}>{donPick}</span>
-                <span style={{ color:'var(--text-dim)', fontSize:11 }}>{donSpread}</span>
-                {settled && (
-                  <span style={{ marginLeft:6, fontSize:11, color:'var(--text-dim)' }}>
-                    B:<span style={{ fontWeight:700, color: billDelta >= 0 ? 'var(--green)' : 'var(--red)', marginLeft:1 }}>{formatMoney(billDelta)}</span>
-                    <span style={{ margin:'0 4px' }}>·</span>
-                    D:<span style={{ fontWeight:700, color: donDelta >= 0 ? 'var(--green)' : 'var(--red)', marginLeft:1 }}>{formatMoney(donDelta)}</span>
-                  </span>
-                )}
-              </div>
-
-            </div>
-          );
-        })}
+      <div className="card" style={{ marginBottom:16, overflowX:'auto' }}>
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Game</th>
+              <th className="desktop-only" style={{ color:'var(--bill)' }}>Bill's Team</th>
+              <th className="desktop-only" style={{ color:'var(--don)' }}>Don's Team</th>
+              <th>Winner</th>
+              <th className="desktop-only num" style={{ color:'var(--bill)' }}>Bill $</th>
+              <th className="desktop-only num" style={{ color:'var(--don)' }}>Don $</th>
+            </tr>
+          </thead>
+          <tbody>{games.map(renderGame)}</tbody>
+        </table>
       </div>
 
-      {/* Rules */}
       <div className="rules-strip">
         <span>🏈 Regular: Win <strong>+$5</strong> · Loss <strong>−$10</strong></span>
         <span>🏆 CFP: Win <strong>+$10</strong> · Loss <strong>−$20</strong></span>
