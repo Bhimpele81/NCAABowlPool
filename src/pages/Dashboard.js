@@ -67,33 +67,32 @@ export default function Dashboard({ state, updateState }) {
     const pickerColor = game.billPicker ? 'var(--bill)' : 'var(--don)';
 
     return (
-      <tr key={game.id}>
+      <tr key={game.id} style={{ borderLeft: game.isCFP ? '3px solid var(--gold)' : '3px solid transparent' }}>
         <td style={{ color:'var(--text-muted)', fontSize:12, whiteSpace:'nowrap' }}>{game.date}</td>
-        <td>
-          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+        <td style={{ minWidth:160 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:5 }}>
             <span style={{
               fontSize:10, fontWeight:800, color:pickerColor,
               background:`color-mix(in srgb, ${pickerColor} 12%, transparent)`,
               border:`1px solid color-mix(in srgb, ${pickerColor} 25%, transparent)`,
               borderRadius:3, padding:'1px 5px', flexShrink:0,
             }}>{game.billPicker ? 'B' : 'D'}</span>
-            {game.isCFP && <span style={{ fontSize:13 }}>🏆</span>}
-            <span style={{ fontWeight:600 }}>{game.name}</span>
-            {game.isCFP && <span className="badge badge-cfp">2×</span>}
+            {game.isCFP && <span style={{ fontSize:12 }}>🏆</span>}
+            <span style={{ fontWeight:600, fontSize:13 }}>{game.name}</span>
           </div>
         </td>
-        <td className="desktop-only">
-          <span className="team-name bill-pick">{billPick}</span>
-          <span className="spread-tag">{billSpread}</span>
+        <td style={{ minWidth:130 }}>
+          <span style={{ fontWeight:600, color:'var(--bill)', fontSize:13 }}>{billPick}</span>
+          <span style={{ color:'var(--text-dim)', fontSize:11, marginLeft:4 }}>{billSpread}</span>
         </td>
-        <td className="desktop-only">
-          <span className="team-name don-pick">{donPick}</span>
-          <span className="spread-tag">{donSpread}</span>
+        <td style={{ minWidth:130 }}>
+          <span style={{ fontWeight:600, color:'var(--don)', fontSize:13 }}>{donPick}</span>
+          <span style={{ color:'var(--text-dim)', fontSize:11, marginLeft:4 }}>{donSpread}</span>
         </td>
-        <td>
+        <td style={{ whiteSpace:'nowrap' }}>
           <div style={{ display:'flex', gap:5 }}>
             <button onClick={() => setResult(game.id, 'bill')} style={{
-              minWidth:50, height:36, borderRadius:'var(--radius-sm)',
+              minWidth:52, height:34, borderRadius:'var(--radius-sm)',
               fontSize:13, fontWeight:700, cursor:'pointer',
               border: result === 'bill' ? '2px solid var(--blue)' : '1px solid var(--navy-border)',
               background: result === 'bill' ? 'var(--bill-bg)' : 'var(--navy-light)',
@@ -101,7 +100,7 @@ export default function Dashboard({ state, updateState }) {
               transition:'all 0.15s', WebkitTapHighlightColor:'transparent',
             }}>Bill</button>
             <button onClick={() => setResult(game.id, 'don')} style={{
-              minWidth:50, height:36, borderRadius:'var(--radius-sm)',
+              minWidth:52, height:34, borderRadius:'var(--radius-sm)',
               fontSize:13, fontWeight:700, cursor:'pointer',
               border: result === 'don' ? '2px solid var(--red)' : '1px solid var(--navy-border)',
               background: result === 'don' ? 'var(--don-bg)' : 'var(--navy-light)',
@@ -110,10 +109,10 @@ export default function Dashboard({ state, updateState }) {
             }}>Don</button>
           </div>
         </td>
-        <td className={`money-cell desktop-only ${settled ? moneyClass(billDelta) : 'zero'}`}>
+        <td className={`money-cell ${settled ? moneyClass(billDelta) : 'zero'}`} style={{ fontSize:13 }}>
           {settled ? formatMoney(billDelta) : <span style={{ color:'var(--text-dim)' }}>—</span>}
         </td>
-        <td className={`money-cell desktop-only ${settled ? moneyClass(donDelta) : 'zero'}`}>
+        <td className={`money-cell ${settled ? moneyClass(donDelta) : 'zero'}`} style={{ fontSize:13 }}>
           {settled ? formatMoney(donDelta) : <span style={{ color:'var(--text-dim)' }}>—</span>}
         </td>
       </tr>
@@ -164,11 +163,11 @@ export default function Dashboard({ state, updateState }) {
             <tr>
               <th>Date</th>
               <th>Game</th>
-              <th className="desktop-only" style={{ color:'var(--bill)' }}>Bill's Team</th>
-              <th className="desktop-only" style={{ color:'var(--don)' }}>Don's Team</th>
+              <th style={{ color:'var(--bill)' }}>Bill's Team</th>
+              <th style={{ color:'var(--don)' }}>Don's Team</th>
               <th>Winner</th>
-              <th className="desktop-only num" style={{ color:'var(--bill)' }}>Bill $</th>
-              <th className="desktop-only num" style={{ color:'var(--don)' }}>Don $</th>
+              <th className="num" style={{ color:'var(--bill)' }}>Bill $</th>
+              <th className="num" style={{ color:'var(--don)' }}>Don $</th>
             </tr>
           </thead>
           <tbody>{games.map(renderGame)}</tbody>
