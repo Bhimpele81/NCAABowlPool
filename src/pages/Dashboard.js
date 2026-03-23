@@ -69,7 +69,7 @@ export default function Dashboard({ state, updateState }) {
     return (
       <tr key={game.id} style={{ borderLeft: game.isCFP ? '3px solid var(--gold)' : '3px solid transparent' }}>
         <td className="desktop-only" style={{ color:'var(--text-muted)', fontSize:12, whiteSpace:'nowrap' }}>{game.date}</td>
-        <td style={{ minWidth:160 }}>
+        <td>
           <div style={{ display:'flex', alignItems:'center', gap:5 }}>
             <span style={{
               fontSize:10, fontWeight:800, color:pickerColor,
@@ -81,18 +81,18 @@ export default function Dashboard({ state, updateState }) {
             <span style={{ fontWeight:600, fontSize:13 }}>{game.name}</span>
           </div>
         </td>
-        <td style={{ minWidth:130 }}>
+        <td>
           <span style={{ fontWeight:600, color:'var(--bill)', fontSize:13 }}>{billPick}</span>
           <span style={{ color:'var(--text-dim)', fontSize:11, marginLeft:4 }}>{billSpread}</span>
         </td>
-        <td style={{ minWidth:130 }}>
+        <td>
           <span style={{ fontWeight:600, color:'var(--don)', fontSize:13 }}>{donPick}</span>
           <span style={{ color:'var(--text-dim)', fontSize:11, marginLeft:4 }}>{donSpread}</span>
         </td>
         <td style={{ whiteSpace:'nowrap' }}>
           <div style={{ display:'flex', gap:5 }}>
             <button onClick={() => setResult(game.id, 'bill')} style={{
-              minWidth:52, height:34, borderRadius:'var(--radius-sm)',
+              minWidth:46, height:34, borderRadius:'var(--radius-sm)',
               fontSize:13, fontWeight:700, cursor:'pointer',
               border: result === 'bill' ? '2px solid var(--blue)' : '1px solid var(--navy-border)',
               background: result === 'bill' ? 'var(--bill-bg)' : 'var(--navy-light)',
@@ -103,7 +103,7 @@ export default function Dashboard({ state, updateState }) {
               <span className="mobile-only">B</span>
             </button>
             <button onClick={() => setResult(game.id, 'don')} style={{
-              minWidth:52, height:34, borderRadius:'var(--radius-sm)',
+              minWidth:46, height:34, borderRadius:'var(--radius-sm)',
               fontSize:13, fontWeight:700, cursor:'pointer',
               border: result === 'don' ? '2px solid var(--red)' : '1px solid var(--navy-border)',
               background: result === 'don' ? 'var(--don-bg)' : 'var(--navy-light)',
