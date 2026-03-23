@@ -66,6 +66,7 @@ body {
   background: transparent; color: var(--text-muted); border: none;
   padding: 6px 14px; font-size: 13px; font-weight: 500;
   cursor: pointer; border-radius: var(--radius-sm); transition: all 0.15s;
+  text-decoration: none; display: inline-flex; align-items: center;
 }
 .nav-btn:hover { color: var(--white); background: var(--navy-light); }
 .nav-btn.active { color: var(--white); background: var(--blue); }
@@ -73,6 +74,7 @@ body {
 .phase-badge {
   font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
   padding: 3px 10px; border-radius: 12px; text-transform: uppercase;
+  white-space: nowrap;
 }
 .phase-setup    { background: var(--navy-light); color: var(--text-muted); border: 1px solid var(--navy-border); }
 .phase-picking  { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
@@ -133,9 +135,6 @@ body {
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tbody tr:hover td { background: rgba(37,99,235,0.06); }
 .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
-.data-table tr.cfp-row td { background: rgba(251,191,36,0.03); }
-.data-table tr.cfp-row td:first-child { border-left: 3px solid var(--gold); }
-.data-table tr.cfp-row:hover td { background: rgba(251,191,36,0.06); }
 
 .form-input, .form-select {
   width: 100%; padding: 6px 10px;
@@ -187,7 +186,6 @@ body {
 .hero-leader .amount { color: var(--green); }
 .hero-leader .amount.neg { color: var(--red); }
 .hero-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
-.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .scoreboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 .score-card {
@@ -199,11 +197,7 @@ body {
 .score-card-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
 .score-card.bill-card .score-card-name { color: var(--bill); }
 .score-card.don-card  .score-card-name { color: var(--don); }
-.score-card-amount { font-size: 32px; font-weight: 800; line-height: 1; }
-.score-card-amount.pos  { color: var(--green); }
-.score-card-amount.neg  { color: var(--red); }
-.score-card-amount.zero { color: var(--text-muted); }
-.score-card-meta { display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+.score-card-meta { display: flex; gap: 16px; flex-wrap: wrap; }
 .score-meta-item { font-size: 12px; color: var(--text-muted); }
 .score-meta-item span { color: var(--text); font-weight: 600; }
 
@@ -355,10 +349,8 @@ body {
 }
 .winner-btn.bill-w  { border-color: rgba(96,165,250,0.3);  color: var(--bill); }
 .winner-btn.don-w   { border-color: rgba(248,113,113,0.3); color: var(--don); }
-.winner-btn.push-w  { border-color: var(--navy-border);    color: var(--text-muted); }
 .winner-btn.active.bill-w { background: var(--bill-bg); border-color: var(--blue); }
 .winner-btn.active.don-w  { background: var(--don-bg);  border-color: var(--red); }
-.winner-btn.active.push-w { background: rgba(107,138,170,0.12); border-color: var(--text-muted); color: var(--text); }
 
 .toast {
   position: fixed; bottom: 24px; right: 24px;
@@ -378,17 +370,17 @@ body {
   .admin-grid  { grid-template-columns: 1fr; }
   .pick-row    { grid-template-columns: 1fr; gap: 8px; }
 }
-@media (max-width: 600px) {
-  .app-main    { padding: 12px; }
-  .brand-sub   { display: none; }
-  .scoreboard  { grid-template-columns: 1fr; }
-  .picker-tabs { grid-template-columns: 1fr; }
-  .data-table th:nth-child(n+6),
-  .data-table td:nth-child(n+6) { display: none; }
-}
-.desktop-only { display: block; }
+
+.desktop-only { display: revert; }
 .mobile-only  { display: none; }
+
 @media (max-width: 600px) {
-  .desktop-only { display: none; }
-  .mobile-only  { display: block; }
+  .desktop-only { display: none !important; }
+  .mobile-only  { display: revert !important; }
+  .app-main     { padding: 10px 8px; }
+  .brand-sub    { display: none; }
+  .scoreboard   { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .score-card   { padding: 12px; }
+  .picker-tabs  { grid-template-columns: 1fr; }
+  .data-table td, .data-table th { padding: 8px 6px; }
 }
