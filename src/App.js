@@ -1,0 +1,99 @@
+import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
+import Dashboard from './pages/Dashboard';
+import SelectionPhase from './pages/SelectionPhase';
+import AdminPanel from './pages/AdminPanel';
+import NavBar from './components/NavBar';
+import { loadState, saveState, subscribeToState } from './utils/supabase';
+
+const STORAGE_KEY = 'bowl_pool_v3';
+const SEED_STATE = {"games":[{"id":"1000","name":"LA Bowl","date":"13-Dec","team1":"Boise State","spread1":"+9.5","team2":"Washington","spread2":"-9.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1001","name":"Salute to Veterans Bowl","date":"16-Dec","team1":"Jacksonville State","spread1":"+3.5","team2":"Troy","spread2":"-3.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1002","name":"Cure Bowl","date":"17-Dec","team1":"South Florida","spread1":"-6.5","team2":"Old Dominion","spread2":"+6.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1003","name":"68 Ventures Bowl","date":"17-Dec","team1":"Louisiana","spread1":"-2.5","team2":"Delaware","spread2":"+2.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1004","name":"Xbox Bowl","date":"18-Dec","team1":"Arkansas State","spread1":"-2.5","team2":"Missouri State","spread2":"+2.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1005","name":"Myrtle Beach Bowl","date":"19-Dec","team1":"Kennesaw State","spread1":"+4.5","team2":"Western Michigan","spread2":"-4.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1006","name":"Gasparilla Bowl","date":"19-Dec","team1":"Memphis","spread1":"+5.5","team2":"NC State","spread2":"-5.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1007","name":"CFP First Round","date":"19-Dec","team1":"Oklahoma","spread1":"+1.5","team2":"Alabama","spread2":"-1.5","isCFP":true,"billPicker":false,"donPicker":true},{"id":"1008","name":"CFP First Round","date":"20-Dec","team1":"Miami (FL)","spread1":"+3.5","team2":"Texas A&M","spread2":"-3.5","isCFP":true,"billPicker":true,"donPicker":false},{"id":"1009","name":"CFP First Round","date":"20-Dec","team1":"Ole Miss","spread1":"-16.5","team2":"Tulane","spread2":"+16.5","isCFP":true,"billPicker":false,"donPicker":true},{"id":"1010","name":"CFP First Round","date":"20-Dec","team1":"James Madison","spread1":"+21.5","team2":"Oregon","spread2":"-21.5","isCFP":true,"billPicker":true,"donPicker":false},{"id":"1011","name":"Idaho Potato Bowl","date":"22-Dec","team1":"Washington State","spread1":"+3.5","team2":"Utah State","spread2":"-3.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1012","name":"Boca Raton Bowl","date":"23-Dec","team1":"Toledo","spread1":"+8.5","team2":"Louisville","spread2":"-8.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1013","name":"New Orleans Bowl","date":"23-Dec","team1":"Southern Miss","spread1":"+4.5","team2":"Western Kentucky","spread2":"-4.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1014","name":"Scooter's Coffee Frisco Bowl","date":"23-Dec","team1":"Ohio","spread1":"+4.5","team2":"UNLV","spread2":"-4.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1015","name":"Sheraton Hawaii Bowl","date":"24-Dec","team1":"Hawaii","spread1":"+2.5","team2":"California","spread2":"-2.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1016","name":"GameAbove Sports Bowl","date":"26-Dec","team1":"Central Michigan","spread1":"+10.5","team2":"Northwestern","spread2":"-10.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1017","name":"Rate Bowl","date":"26-Dec","team1":"New Mexico","spread1":"+3.5","team2":"Minnesota","spread2":"-3.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1018","name":"First Responder Bowl","date":"26-Dec","team1":"UTSA","spread1":"-9.5","team2":"FIU","spread2":"+9.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1019","name":"Military Bowl","date":"27-Dec","team1":"East Carolina","spread1":"+5.5","team2":"Pittsburgh","spread2":"-5.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1020","name":"Pinstripe Bowl","date":"27-Dec","team1":"Clemson","spread1":"+2.5","team2":"Penn State","spread2":"-2.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1021","name":"Fenway Bowl","date":"27-Dec","team1":"Army","spread1":"-2.5","team2":"UConn","spread2":"+2.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1022","name":"Pop-Tarts Bowl","date":"27-Dec","team1":"Georgia Tech","spread1":"+2.5","team2":"BYU","spread2":"-2.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1023","name":"Arizona Bowl","date":"27-Dec","team1":"Miami (OH)","spread1":"+3.5","team2":"Fresno State","spread2":"-3.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1024","name":"New Mexico Bowl","date":"27-Dec","team1":"San Diego State","spread1":"-4.5","team2":"North Texas","spread2":"+4.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1025","name":"Gator Bowl","date":"27-Dec","team1":"Virginia","spread1":"+7.5","team2":"Missouri","spread2":"-7.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1026","name":"Texas Bowl","date":"27-Dec","team1":"LSU","spread1":"-3.5","team2":"Houston","spread2":"+3.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1027","name":"Birmingham Bowl","date":"29-Dec","team1":"Georgia Southern","spread1":"-2.5","team2":"Appalachian State","spread2":"+2.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1028","name":"Independence Bowl","date":"30-Dec","team1":"Coastal Carolina","spread1":"+7.5","team2":"Louisiana Tech","spread2":"-7.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1029","name":"Music City Bowl","date":"30-Dec","team1":"Illinois","spread1":"+5.5","team2":"Tennessee","spread2":"-5.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1030","name":"Valero Alamo Bowl","date":"30-Dec","team1":"USC","spread1":"-6.5","team2":"TCU","spread2":"+6.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1031","name":"ReliaQuest Bowl","date":"31-Dec","team1":"Iowa","spread1":"-4.5","team2":"Vanderbilt","spread2":"+4.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1032","name":"Tony the Tiger Sun Bowl","date":"31-Dec","team1":"Arizona State","spread1":"+1.5","team2":"Duke","spread2":"-1.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1033","name":"Citrus Bowl","date":"31-Dec","team1":"Texas","spread1":"-5.5","team2":"Michigan","spread2":"+5.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1034","name":"Las Vegas Bowl","date":"31-Dec","team1":"Nebraska","spread1":"+13.5","team2":"Utah","spread2":"-13.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1035","name":"Cotton Bowl Classic","date":"31-Dec","team1":"Ohio State","spread1":"-9.5","team2":"Miami","spread2":"+9.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1036","name":"Capital One Orange Bowl","date":"1-Jan","team1":"Texas Tech","spread1":"+2.5","team2":"Oregon","spread2":"-2.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1037","name":"Rose Bowl Game","date":"1-Jan","team1":"Indiana","spread1":"-7.5","team2":"Alabama","spread2":"+7.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1038","name":"Allstate Sugar Bowl","date":"1-Jan","team1":"Ole Miss","spread1":"+6.5","team2":"Georgia","spread2":"-6.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1039","name":"Armed Forces Bowl","date":"2-Jan","team1":"Texas State","spread1":"-9.5","team2":"Rice","spread2":"+9.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1040","name":"Liberty Bowl","date":"2-Jan","team1":"Navy","spread1":"+1.5","team2":"Cincinnati","spread2":"-1.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1041","name":"Holiday Bowl","date":"2-Jan","team1":"Arizona","spread1":"-2.5","team2":"SMU","spread2":"+2.5","isCFP":false,"billPicker":false,"donPicker":true},{"id":"1042","name":"Duke's Mayo Bowl","date":"2-Jan","team1":"Mississippi State","spread1":"-3.5","team2":"Wake Forest","spread2":"+3.5","isCFP":false,"billPicker":true,"donPicker":false},{"id":"1043","name":"Fiesta Bowl (CFP Semifinal)","date":"8-Jan","team1":"Ole Miss","spread1":"+3.5","team2":"Miami","spread2":"-3.5","isCFP":true,"billPicker":false,"donPicker":true},{"id":"1044","name":"Peach Bowl (CFP Semifinal)","date":"9-Jan","team1":"Oregon","spread1":"+3.5","team2":"Indiana","spread2":"-3.5","isCFP":true,"billPicker":true,"donPicker":false}],"picks":{"1000":{"bill":"Washington","billSpread":"-9.5","don":"Boise State","donSpread":"+9.5"},"1001":{"bill":"Troy","billSpread":"-3.5","don":"Jacksonville State","donSpread":"+3.5"},"1002":{"bill":"Old Dominion","billSpread":"+6.5","don":"South Florida","donSpread":"-6.5"},"1003":{"bill":"Delaware","billSpread":"+2.5","don":"Louisiana","donSpread":"-2.5"},"1004":{"bill":"Missouri State","billSpread":"+2.5","don":"Arkansas State","donSpread":"-2.5"},"1005":{"bill":"Western Michigan","billSpread":"-4.5","don":"Kennesaw State","donSpread":"+4.5"},"1006":{"bill":"NC State","billSpread":"-5.5","don":"Memphis","donSpread":"+5.5"},"1007":{"bill":"Alabama","billSpread":"-1.5","don":"Oklahoma","donSpread":"+1.5"},"1008":{"bill":"Texas A&M","billSpread":"-3.5","don":"Miami (FL)","donSpread":"+3.5"},"1009":{"bill":"Tulane","billSpread":"+16.5","don":"Ole Miss","donSpread":"-16.5"},"1010":{"bill":"Oregon","billSpread":"-21.5","don":"James Madison","donSpread":"+21.5"},"1011":{"bill":"Utah State","billSpread":"-3.5","don":"Washington State","donSpread":"+3.5"},"1012":{"bill":"Louisville","billSpread":"-8.5","don":"Toledo","donSpread":"+8.5"},"1013":{"bill":"Western Kentucky","billSpread":"-4.5","don":"Southern Miss","donSpread":"+4.5"},"1014":{"bill":"UNLV","billSpread":"-4.5","don":"Ohio","donSpread":"+4.5"},"1015":{"bill":"California","billSpread":"-2.5","don":"Hawaii","donSpread":"+2.5"},"1016":{"bill":"Northwestern","billSpread":"-10.5","don":"Central Michigan","donSpread":"+10.5"},"1017":{"bill":"Minnesota","billSpread":"-3.5","don":"New Mexico","donSpread":"+3.5"},"1018":{"bill":"FIU","billSpread":"+9.5","don":"UTSA","donSpread":"-9.5"},"1019":{"bill":"Pittsburgh","billSpread":"-5.5","don":"East Carolina","donSpread":"+5.5"},"1020":{"bill":"Penn State","billSpread":"-2.5","don":"Clemson","donSpread":"+2.5"},"1021":{"bill":"UConn","billSpread":"+2.5","don":"Army","donSpread":"-2.5"},"1022":{"bill":"BYU","billSpread":"-2.5","don":"Georgia Tech","donSpread":"+2.5"},"1023":{"bill":"Fresno State","billSpread":"-3.5","don":"Miami (OH)","donSpread":"+3.5"},"1024":{"bill":"North Texas","billSpread":"+4.5","don":"San Diego State","donSpread":"-4.5"},"1025":{"bill":"Missouri","billSpread":"-7.5","don":"Virginia","donSpread":"+7.5"},"1026":{"bill":"Houston","billSpread":"+3.5","don":"LSU","donSpread":"-3.5"},"1027":{"bill":"Appalachian State","billSpread":"+2.5","don":"Georgia Southern","donSpread":"-2.5"},"1028":{"bill":"Louisiana Tech","billSpread":"-7.5","don":"Coastal Carolina","donSpread":"+7.5"},"1029":{"bill":"Tennessee","billSpread":"-5.5","don":"Illinois","donSpread":"+5.5"},"1030":{"bill":"TCU","billSpread":"+6.5","don":"USC","donSpread":"-6.5"},"1031":{"bill":"Vanderbilt","billSpread":"+4.5","don":"Iowa","donSpread":"-4.5"},"1032":{"bill":"Duke","billSpread":"-1.5","don":"Arizona State","donSpread":"+1.5"},"1033":{"bill":"Michigan","billSpread":"+5.5","don":"Texas","donSpread":"-5.5"},"1034":{"bill":"Utah","billSpread":"-13.5","don":"Nebraska","donSpread":"+13.5"},"1035":{"bill":"Miami","billSpread":"+9.5","don":"Ohio State","donSpread":"-9.5"},"1036":{"bill":"Oregon","billSpread":"-2.5","don":"Texas Tech","donSpread":"+2.5"},"1037":{"bill":"Alabama","billSpread":"+7.5","don":"Indiana","donSpread":"-7.5"},"1038":{"bill":"Georgia","billSpread":"-6.5","don":"Ole Miss","donSpread":"+6.5"},"1039":{"bill":"Rice","billSpread":"+9.5","don":"Texas State","donSpread":"-9.5"},"1040":{"bill":"Cincinnati","billSpread":"-1.5","don":"Navy","donSpread":"+1.5"},"1041":{"bill":"SMU","billSpread":"+2.5","don":"Arizona","donSpread":"-2.5"},"1042":{"bill":"Wake Forest","billSpread":"+3.5","don":"Mississippi State","donSpread":"-3.5"},"1043":{"bill":"Miami","billSpread":"-3.5","don":"Ole Miss","donSpread":"+3.5"},"1044":{"bill":"Indiana","billSpread":"-3.5","don":"Oregon","donSpread":"+3.5"}},"results":{"1000":"bill","1001":"don","1002":"bill","1003":"bill","1004":"don","1005":"bill","1006":"bill","1007":"bill","1008":"don","1009":"don","1010":"don","1011":"don","1012":"don","1013":"bill","1014":"don","1015":"don","1016":"bill","1017":"don","1018":"don","1019":"don","1020":"bill","1021":"don","1022":"bill","1023":"bill","1024":"bill","1025":"don","1026":"bill","1027":"don","1028":"bill","1029":"don","1030":"bill","1031":"don","1032":"bill","1033":"don","1034":"bill","1035":"bill","1036":"bill","1037":"don","1038":"don","1039":"don","1040":"don","1041":"bill","1042":"bill","1043":"bill","1044":"bill"},"lockTime":null,"phase":"tracking","season":"2025-26"};
+const DEFAULT_STATE = {
+  games: [], picks: {}, results: {}, lockTime: null, phase: 'setup', season: '2025-26',
+};
+
+export default function App() {
+  const [state, setState] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? { ...DEFAULT_STATE, ...JSON.parse(saved) } : SEED_STATE;
+    } catch { return SEED_STATE; }
+  });
+  const [page, setPage] = useState('dashboard');
+  const [syncing, setSyncing] = useState(false);
+  const [online, setOnline] = useState(true);
+  const saveTimer = useRef(null);
+  const isRemoteUpdate = useRef(false);
+
+  // Load from Supabase on startup
+  useEffect(() => {
+    setSyncing(true);
+    loadState().then(remoteState => {
+      if (remoteState) {
+        setState({ ...DEFAULT_STATE, ...remoteState });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteState));
+        setOnline(true);
+      }
+      setSyncing(false);
+    }).catch(() => {
+      setSyncing(false);
+      setOnline(false);
+    });
+
+    // Subscribe to real-time updates from other devices
+    const channel = subscribeToState((remoteState) => {
+      isRemoteUpdate.current = true;
+      setState({ ...DEFAULT_STATE, ...remoteState });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteState));
+    });
+
+    return () => { channel.unsubscribe(); };
+  }, []);
+
+  // Save to Supabase + localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (isRemoteUpdate.current) {
+      isRemoteUpdate.current = false;
+      return;
+    }
+    // Debounce saves by 800ms
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      setSyncing(true);
+      saveState(state).then(() => {
+        setSyncing(false);
+        setOnline(true);
+      }).catch(() => {
+        setSyncing(false);
+        setOnline(false);
+      });
+    }, 800);
+  }, [state]);
+
+  // Auto-lock picks
+  useEffect(() => {
+    if (state.lockTime && state.phase === 'picking') {
+      const check = () => {
+        if (new Date() >= new Date(state.lockTime))
+          setState(s => ({ ...s, phase: 'locked' }));
+      };
+      check();
+      const t = setInterval(check, 30000);
+      return () => clearInterval(t);
+    }
+  }, [state.lockTime, state.phase]);
+
+  const updateState = (patch) => setState(s => ({ ...s, ...patch }));
+
+  return (
+    <div>
+      <NavBar page={page} setPage={setPage} phase={state.phase} syncing={syncing} online={online} />
+      <main className="app-main">
+        {page === 'dashboard' && <Dashboard state={state} updateState={updateState} />}
+        {page === 'picks'     && <SelectionPhase state={state} updateState={updateState} />}
+        {page === 'admin'     && <AdminPanel state={state} updateState={updateState} />}
+      </main>
+    </div>
+  );
+}
