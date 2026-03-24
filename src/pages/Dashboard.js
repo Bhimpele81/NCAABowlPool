@@ -91,6 +91,21 @@ export default function Dashboard({ state, updateState }) {
     const billSpread = picks[game.id]?.billSpread || game.spread2;
     const donSpread  = picks[game.id]?.donSpread  || game.spread1;
     const { billDelta, donDelta, settled } = calcGameResult(game, result);
+
+    // Determine result display for single Result column
+    let resultDisplay = null;
+    if (settled) {
+      const winner = result === 'bill' ? 'Bill' : 'Don';
+      const winnerColor = result === 'bill' ? 'var(--bill)' : 'var(--don)';
+      const winnerDelta = result === 'bill' ? billDelta : donDelta;
+      resultDisplay = (
+        <span>
+          <span style={{ fontWeight:700, color: winnerColor }}>{winner}</span>
+          <span style={{ marginLeft:4, color: winnerDelta > 0 ? 'var(--green, #4ade80)' : 'var(--red)', fontWeight:600 }}>{formatMoney(winnerDelta)}</span>
+        </span>
+      );
+    }
+
     const pickerColor = game.billPicker ? 'var(--bill)' : 'var(--don)';
     return (
       <tr key={game.id} style={{ borderLeft: game.isCFP ? '3px solid var(--gold)' : '3px solid transparent' }}>
@@ -110,8 +125,9 @@ export default function Dashboard({ state, updateState }) {
             <button onClick={() => setResult(game.id, 'don')} style={{ minWidth:52, height:34, borderRadius:'var(--radius-sm)', fontSize:13, fontWeight:700, cursor:'pointer', border: result === 'don' ? '2px solid var(--red)' : '1px solid var(--navy-border)', background: result === 'don' ? 'var(--don-bg)' : 'var(--navy-light)', color: result === 'don' ? 'var(--don)' : 'var(--text-muted)', transition:'all 0.15s' }}>Don</button>
           </div>
         </td>
-        <td className={`money-cell ${settled ? moneyClass(billDelta) : 'zero'}`}>{settled ? formatMoney(billDelta) : '—'}</td>
-        <td className={`money-cell ${settled ? moneyClass(donDelta) : 'zero'}`}>{settled ? formatMoney(donDelta) : '—'}</td>
+        <td className="money-cell">
+          {settled ? resultDisplay : <span style={{ color:'var(--text-muted)' }}>—</span>}
+        </td>
       </tr>
     );
   };
@@ -119,7 +135,7 @@ export default function Dashboard({ state, updateState }) {
   // Desktop separator row
   const desktopSeparator = (
     <tr key="separator">
-      <td colSpan={7} style={{ padding:'6px 12px', background:'var(--navy-mid)', borderTop:'2px solid var(--navy-border)', borderBottom:'2px solid var(--navy-border)' }}>
+      <td colSpan={6} style={{ padding:'6px 12px', background:'var(--navy-mid)', borderTop:'2px solid var(--navy-border)', borderBottom:'2px solid var(--navy-border)' }}>
         <span style={{ fontSize:11, fontWeight:600, textTransform:'uppercase', letterSpacing:1, color:'var(--text-muted)' }}>
           ✓ Completed Games
         </span>
@@ -234,8 +250,7 @@ export default function Dashboard({ state, updateState }) {
               <th style={{ color:'var(--bill)' }}>Bill's Team</th>
               <th style={{ color:'var(--don)' }}>Don's Team</th>
               <th>Winner</th>
-              <th className="num" style={{ color:'var(--bill)' }}>Bill $</th>
-              <th className="num" style={{ color:'var(--don)' }}>Don $</th>
+              <th className="num">Result</th>
             </tr>
           </thead>
           <tbody>
