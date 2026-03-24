@@ -196,7 +196,7 @@ body {
 }
 .score-card.bill-card { border-left: 3px solid var(--blue); }
 .score-card.don-card  { border-left: 3px solid var(--red); }
-.score-card-name { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.score-card-name { font-size: 17px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 .score-card.bill-card .score-card-name { color: var(--bill); }
 .score-card.don-card  .score-card-name { color: var(--don); }
 .score-card-amount { font-size: 32px; font-weight: 800; line-height: 1; }
@@ -204,7 +204,7 @@ body {
 .score-card-amount.neg  { color: var(--red); }
 .score-card-amount.zero { color: var(--text-muted); }
 .score-card-meta { display: flex; gap: 20px; margin-top: 8px; flex-wrap: wrap; }
-.score-meta-item { font-size: 15px; color: var(--text-muted); }
+.score-meta-item { font-size: 19px; color: var(--text-muted); }
 .score-meta-item span { color: var(--text); font-weight: 700; }
 
 .lock-banner {
