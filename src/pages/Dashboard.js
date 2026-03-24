@@ -101,7 +101,7 @@ export default function Dashboard({ state, updateState }) {
       resultDisplay = (
         <span>
           <span style={{ fontWeight:700, color: winnerColor }}>{winner}</span>
-          <span style={{ marginLeft:4, color: winnerDelta > 0 ? 'var(--green, #4ade80)' : 'var(--red)', fontWeight:600 }}>{formatMoney(winnerDelta)}</span>
+          <span style={{ marginLeft:4, color: winnerColor, fontWeight:600 }}>{formatMoney(winnerDelta)}</span>
         </span>
       );
     }
