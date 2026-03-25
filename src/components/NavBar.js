@@ -15,8 +15,8 @@ export default function NavBar({ page, setPage, phase, syncing, online }) {
           <button className={`nav-btn ${page === 'dashboard' ? 'active' : ''}`} onClick={() => setPage('dashboard')}>Dashboard</button>
           <button className={`nav-btn ${page === 'picks' ? 'active' : ''}`} onClick={() => setPage('picks')}>Picks</button>
           <button className={`nav-btn ${page === 'admin' ? 'active' : ''}`} onClick={() => setPage('admin')}>Admin</button>
-          <a href="https://nascarpool.onrender.com/" target="_blank" rel="noopener noreferrer" className="nav-btn">Nascar Pool</a>
-          <a href="https://pgagolfpool.onrender.com/" target="_blank" rel="noopener noreferrer" className="nav-btn">PGA Pool</a>
+          <a href="https://nascarpool.onrender.com/" target="_blank" rel="noopener noreferrer" className="nav-btn" style={{textDecoration:'none'}}>Nascar Pool</a>
+          <a href="https://pgagolfpool.onrender.com/" target="_blank" rel="noopener noreferrer" className="nav-btn" style={{textDecoration:'none'}}>PGA Pool</a>
         </nav>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           {syncing && (
